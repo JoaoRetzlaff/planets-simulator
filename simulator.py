@@ -59,7 +59,7 @@ last_origin = [0, 0]
 origin = [0, 0]
 pressed = False
 
-def draw_circle(event,x,y,flags,param):
+def dragAndDropCamera(event,x,y,flags,param):
     global initial_point, pressed, origin, last_origin
     if event == cv2.EVENT_LBUTTONDOWN:
         pressed = True
@@ -73,7 +73,7 @@ def draw_circle(event,x,y,flags,param):
         pressed = False
 
 cv2.namedWindow("image")
-cv2.setMouseCallback("image", draw_circle)
+cv2.setMouseCallback("image", dragAndDropCamera)
 
 while True:
     initial_time = time()    
