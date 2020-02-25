@@ -24,45 +24,61 @@ for i in range(n):
     color.append((0, 255, 0))
     ring.append(False)
 
-m[0] = 10**(37)
+m[0] = 2*10**(37)
 radius[0] = 30
-x[0] = 600
+x[0] = 200
 y[0] = 350
-# vx[0] = -cos(pi/3)*2*10**(12)
-# vy[0] = sin(pi/3)*2*10**(12)
 vx[0] = 0
-vy[0] = 0
+vy[0] = -1*10**(12)
 color[0] = (0, 255, 255)
 
 m[1] = 10**(37)
 radius[1] = 30
-x[1] = 400
+x[1] = 700
 y[1] = 350
-vx[1] = 2*10**(12)
-vy[1] = 0
-# vx[1] = -cos(pi/3)*2*10**(12)
-# vy[1] = -sin(pi/3)*2*10**(12)
+vx[1] = 0
+vy[1] = 10**(12)+2*10**(12)
 color[1] = (0, 255, 255)
 
-# m[2] = 10**(37)
-# radius[2] = 30
-# x[2] = 500
-# y[2] = 350-100*sqrt(3)
-# vx[2] = 2*10**(12)
-# vy[2] = 0
-# color[2] = (0, 255, 255)
+m[2] = 10**(37)
+radius[2] = 30
+x[2] = 800
+y[2] = 350
+vx[2] = 0
+vy[2] = 10**(12)-2*10**(12)
+color[2] = (0, 255, 255)
 
 G = 6.67*10**(-11)
 dt = 3*10**(-13)
 
-
 base = np.zeros(shape=(700, 1000, 3), dtype=np.uint8)
 rastro = []
+
+initial_point = [0, 0]
+last_origin = [0, 0]
+origin = [0, 0]
+pressed = False
+
+def draw_circle(event,x,y,flags,param):
+    global initial_point, pressed, origin, last_origin
+    if event == cv2.EVENT_LBUTTONDOWN:
+        pressed = True
+        initial_point = [x, y]
+        last_origin = [origin[0], origin[1]]
+    if event == cv2.EVENT_MOUSEMOVE and pressed:
+        origin[0] = last_origin[0] + x - initial_point[0]
+        origin[1] = last_origin[1] + y - initial_point[1]
+    if event == cv2.EVENT_LBUTTONUP:
+        initial_point = [0, 0]
+        pressed = False
+
+cv2.namedWindow("image")
+cv2.setMouseCallback("image", draw_circle)
 
 while True:
     initial_time = time()    
     img = base.copy()
-    
+
     for j in range(len(m)):
         if not (x[j] == -10000 and y[j] == -10000):
             for i in range(len(m)):
@@ -91,16 +107,16 @@ while True:
             rastro.append((int(x[i]), int(y[i]), color[i]))
 
     for i in range(len(rastro)):
-        point = rastro[i][:2]
+        xr, yr = rastro[i][:2]
         c = rastro[i][2]
-        cv2.circle(img, point, 1, (int(0.6*c[0]*i/len(rastro)), int(0.6*c[1]*i/len(rastro)), int(0.6*c[2]*i/len(rastro))), 1)
+        cv2.circle(img, (origin[0] + xr, origin[1] + yr), 1, (int(0.6*c[0]*i/len(rastro)), int(0.6*c[1]*i/len(rastro)), int(0.6*c[2]*i/len(rastro))), 1)
 
     for i in range(len(m)):
         if not (x[i] == -10000 and y[i] == -10000):
-            cv2.putText(img, str(i), (int(radius[i]+x[i]), int(radius[i]+y[i])), cv2.FONT_HERSHEY_SIMPLEX, 1, color[i])
-            cv2.circle(img, (int(x[i]), int(y[i])), int(radius[i]), color[i], 2)
+            cv2.putText(img, str(i), (origin[0] + int(radius[i]+x[i]), origin[1] + int(radius[i]+y[i])), cv2.FONT_HERSHEY_SIMPLEX, 1, color[i])
+            cv2.circle(img, (origin[0] + int(x[i]), origin[1] + int(y[i])), int(radius[i]), color[i], 2)
             if ring[i]:
-                cv2.ellipse(img, (int(x[i]), int(y[i])), (int(radius[i]*1.5), int(radius[i]*0.5)), 0, 0, 360, color[i])
+                cv2.ellipse(img, (origin[0] + int(x[i]), origin[1] + int(y[i])), (int(radius[i]*1.5), int(radius[i]*0.5)), 0, 0, 360, color[i])
 
     cv2.imshow("image", img)
     while time()-initial_time < 7*10**(-4):
