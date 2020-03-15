@@ -10,4 +10,4 @@ Have fun!
 
 ## Author
 
-Pedro Cleto - High School Student
+Pedro Cleto - pedrocaf@ufmg.br
