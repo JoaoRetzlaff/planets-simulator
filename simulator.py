@@ -5,13 +5,13 @@ from math import sin, cos, pi, sqrt
 
 n = 10
 
-m = []
-radius = []
-x = []
-y = []
-vx = []
-vy = []
-color = []
+m = [500]
+radius = [30]
+x = [-3]
+y = [5]
+vx = [30000]
+vy = [30000]
+color = [4]
 ring = []
 
 for i in range(n):
